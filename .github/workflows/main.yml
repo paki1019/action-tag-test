@@ -1,0 +1,21 @@
+name: Create Git tag
+on:
+  push:
+    branches:
+      - main
+jobs:
+  tag:
+    name: Create tag
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Calculate time
+        id: calc_time
+        run: echo "::set-output name=time::$(date -d "$(( $(date +'%s')/1800*1800 )) seconds ago" +%H%M)"
+      - name: Create tag
+        run: git tag $(date '+%Y%m%d')_${{ steps.calc_time.outputs.time }}
+      - name: Push tag
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: git push origin --tags
